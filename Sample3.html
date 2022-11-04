@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+ </head>
+ <body>
+  <main>
+   <section class="section" id="account-opning">
+    <div class="container my-4 p-4 rounded">
+     <div class="row">
+      <div class="col-sm-4">
+       <form>
+        <h2 class="d-flex justify-content-center">Account Opening Form</h2>
+        <div class="mb-3">
+         <label for="fname" class="form-label">Full Name</label>
+         <input type="text" id="fname" name="fname" class="form-control" placeholder="Enter your name" required/>
+        </div>
+        <div class="mb-3">
+         <label for="opn_balance" class="form-label">Opening Balance</label>
+         <select class="form-select" name="opn_balance" id="balance">
+          <option value="1000">1000</option>
+          <option value="3000">3000</option>
+          <option value="5000">5000</option>
+         </select>
+        </div>
+        <div class="mb-3">
+         <label for="fname" class="form-label">Pin</label>
+         <!-- <input type="password" id="pwd" name="pwd" class="form-control" placeholder="Enter pin" required> -->
+         <input type="password" name="pincode" maxlength="4" id="pwd" pattern="\d{4}" class="form-control" placeholder="Enter pin" required/>
+        </div>
+        <div class="d-flex justify-content-center">
+         <button type="submit" class="btn btn-primary d-block" id="create_account">Create Account</button>
+        </div>
+       </form>
+      </div>
+      <div class="col-sm-8">
+       <h2 class="d-flex justify-content-center">User List</h2>
+       <div class="table-responsive">
+        <table class="table table-bordered table-striped overflow-y: hidden" id="myTable">
+         <thead>
+          <tr>
+           <th>ID</th>
+           <th>Name</th>
+           <th>Balance</th>
+           <th>Pin</th>
+          </tr>
+         </thead>
+         <tbody id="user-table">
+          <tr id="userRow">
+          </tr>
+         </tbody>
+        </table>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section>
+   <section class="section" id="transaction">
+    <div class="container my-4 p-4 rounded">
+     <div class="row">
+       <div class="col-sm-4">
+        <form>
+         <h2 class="d-flex justify-content-center">Transaction</h2>
+         <div class="mb-3">
+          <label class="form-label" for="person">From</label>
+          <input id ="from" type="text" class="form-control" pattern="[0-9]+" placeholder="user-id">
+         </div>
+         <div class="mb-3">
+          <label class="form-label" for="another_person">To</label>
+          <input id ="to" type="text" class="form-control" pattern="[0-9]+" id = "content" placeholder="user-id">
+         </div>
+         <div class="mb-3">
+          <label class="form-label" for="amount">Amount</label>
+          <input id ="amount" type="text" class="form-control" pattern="[0-9]+">
+         </div>
+         <div class="mb-3">
+          <label class="form-label" for="pin">Pin</label>
+          <input id ="pin" type="password" class="form-control" maxlength="4" pattern="\d{4}" name="pin" placeholder="Enter pin" required/>
+         </div>
+         <div class="mb-3 d-flex justify-content-center">
+          <button id="make_transaction_btn" class="btn btn-primary d-block">Transfer </button>
+         </div>
+        </form>
+       </div>
+       <div class="col-sm-8">
+        <h2 class="d-flex justify-content-center">Passbook</h2>
+        <table class="table table-bordered table-striped overflow-y: hidden" id="myPassbook">
+         <thead>
+          <tr>
+           <th>From User</th>
+           <th>To User</th>
+           <th>Amount</th>
+          </tr>
+         </thead>
+         <tbody id="passbook">
+         </tbody>
+        </table>
+        <div>
+         <pre id="content"></pre>
+        </div>
+       </div>
+     </div>
+    </div>
+   </section>
+  </main>
+  <script type="text/javascript">
+   let users = [];
+   $(document).ready(function(){
+    $("#create_account").on("click", function(event){
+     event.preventDefault();
+     var obj = {
+      id: users.length + 1,
+      fullname: $('#fname').val(),
+      balance: parseInt($('#balance').val(), 10),
+      pwd: $('#pwd').val(),
+      transactions: []
+     }
+     users.push(obj);
+     document.forms[0].reset();
+     $('#myTable tbody').append("<tr data-id='"+obj.id+"'><td><button>"+obj.id+ "</button></td><td>"+ obj.fullname + "</td><td>"+ obj.balance +"</td><td>"+ obj.pwd + "</td></tr>")
+    });
+    $("#make_transaction_btn").on("click", function(event){
+     event.preventDefault();
+     var transfer = {
+      from: parseInt($('#from').val(), 10),
+      to: parseInt($('#to').val(), 10),
+      amount: parseInt($('#amount').val(), 10),
+      pin: $('#pin').val()
+     }
+     // transferData.push(transfer);
+     document.forms[0].reset();
+     if(transfer.from===transfer.to){
+      alert("You can't transfer amount yourself");
+     };
+     if(fromUserExist(transfer.from) && toUserExist(transfer.to)){
+      if(validatePin(transfer.from, transfer.pin)){
+       if(checkSufficientBalance(transfer.from, transfer.amount)){
+        transferAmount(transfer.from,transfer.to, transfer.amount);
+       }else{
+        alert("Please make a deposit. Your account does not have sufficient funds");
+       }
+      }else{
+       alert("Invalid Pin");
+      }
+     }else{
+      alert("Unknown User");
+     };
+    });
+    $('#myTable tbody').on('click', 'tr', function (event) {
+     event.preventDefault();
+     $('#myTable tbody tr').on('click', 'button', function (event) {
+      var t = $(event.target).text();
+      searchUser(parseInt(t));
+      text = ''
+      transactions = user.transactions;
+      for (let i = 0; i < transactions.length; i++) {
+       tr = transactions[i]
+       fromUser = searchUser(tr.fromId)
+       toUser = searchUser(tr.toId)
+       text += "<tr><td>"+ fromUser.fullname + "</td><td>"+ toUser.fullname +"</td><td>"+ tr.amount + "</td></tr>"
+      }
+      var pre = document.getElementById('passbook');
+      pre.innerHTML = text;
+     });
+    });
+    function transferAmount(fromId, toId, amount){
+     users = users.map(obj => {
+      if (obj.id=== fromId) {
+       leftBalance = obj.balance - amount;
+       transaction = {fromId: fromId, toId: toId, amount: -amount}
+       obj.transactions.push(transaction)
+       return {...obj, balance: leftBalance };
+      }
+      if (obj.id=== toId){
+       newBalance = obj.balance + amount;
+       transaction = {fromId: fromId, toId: toId, amount: amount}
+       obj.transactions.push(transaction)
+       return {...obj, balance: newBalance };
+      }
+      return obj;
+     });
+     myHtmlContent = "";
+     users.forEach(drawUserTable);
+     var tbody = document.getElementById('user-table');
+     tbody.innerHTML = myHtmlContent;
+    }
+   });
+   function drawUserTable(obj){
+    myHtmlContent = myHtmlContent + "<tr data-id='"+obj.id+"'><td><button>"+obj.id+ "</button></td><td>"+ obj.fullname + "</td><td>"+ obj.balance +"</td><td>"+ obj.pwd + "</td></tr>";
+   }
+   function searchUser(t){
+    user = users.filter(x =>x.id=== t)[0];
+    return user
+   }
+   function fromUserExist(fromId){
+    return users.some(function (x) {
+     returnx.id=== fromId;
+    });
+   }
+   function toUserExist(toId){
+    return users.some(function (x) {
+     returnx.id=== toId;
+    });
+   }
+   function checkSufficientBalance(fromId, withdrawAmount){
+    user = users.filter(x =>x.id=== fromId);
+    return withdrawAmount <= user[0].balance;
+   }
+   function validatePin(fromId, pin){
+    user = users.filter(x =>x.id=== fromId);
+    return user[0].pwd === pin;
+   }
+  </script>
+ </body>
+</html>
+
+
+
+
+
+

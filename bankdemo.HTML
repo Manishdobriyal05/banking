@@ -1,0 +1,176 @@
+<html>
+  <head>
+    <title>Project</title>
+    <style type="text/css">
+      table
+      {
+        border-width: 20px;
+        width: 100%;
+        border: solid;
+        text-align: center;
+      }
+      label{
+        padding: 4px;
+      }
+      input{
+        padding: 8px;
+      }
+      body{
+        background-color: #00B5EF;
+        counter-reset: ID;
+      }
+      form{
+      box-sizing: border-box;
+      display:flex;
+      flex-direction: column;
+      width: 23vw;
+      }
+      .row{
+      float: left;
+      }
+      .column{
+      float: right;
+      width: 30%;
+      }
+      .rule td:first-child:before
+      {
+      counter-increment: ID;  
+      content: counter(ID); 
+      }
+      .button{
+        background-color: lightgreen;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+      <!---Customer form details-->
+      <div class="row">
+        <h1><u>Customer Detail</u></h1>
+        <h5>Today's  Date & Time:</h5>
+        <p id="p1"></p>
+        <form>
+          <label for="text">First Name: </label>
+          <input type="text" id="fname" placeholder="Enter your First Name">
+          <br>
+          <label for="text">Last Name:</label>
+          <input type="text" id="lname" placeholder="Enter your Last Name">
+          <br>
+          <label for="text">Opening Balance </label>
+          <input type="number" id="balance" placeholder="Enter your Balance">
+          <br>
+          <label for="pin">PIN </label>
+          <input type="password" id="pin" placeholder="Enter your PIN">
+          <br>
+          &nbsp;
+          &nbsp;
+          &nbsp;
+          <input type="button" id="submit" value="Submit" class="button">
+          <input type="Reset" name="Clear">
+          &nbsp;       
+          <!--Another form of transaction--->
+          <h1><u>Transaction Details</u></h1>
+        <form>
+          <label for="text">From: </label>
+          <input type="text" id="from" placeholder="Enter sender's ID">
+          <br>
+          <label for="text">To:</label>
+          <input type="text" id="to" placeholder="Enter receiver's ID">
+          <br>
+          <label for="text">Amount Transfer: </label>
+          <input type="text" id="amount" placeholder="Enter your Balance">
+          <br>
+          <label for="pin">PIN: </label>
+          <input type="password" id="pin1" placeholder="Enter your PIN">
+          <br>
+          &nbsp;
+          &nbsp;
+          &nbsp;
+          &nbsp;
+          &nbsp;
+          &nbsp;
+          <input type="button" id="Transfer" value="Transfer" class="button">    
+        </form>
+        </form>
+      </div>
+      <!--Customer details in table--> 
+      <div class="column">
+        <h1><u>Account Details</u></h1>
+        <table id="table" align="left" border="1" class="rule">
+          <tr>
+            <th id="box" class="inc">ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Balance</th>
+            <th>PIN</th>
+          </tr>
+        </table>
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        <br>
+        <h1><u>Passbook</u></h1>
+        <table id="table2" align="bottom" border="1" class="gap">
+          <tr>
+            <th>Transfer From</th>
+            <th>Transfer To</th>
+            <th>Remaining Amt</th>
+          </tr>
+        </table>
+      </div>
+      <!--JS for value insertion in table--->
+      <script type="text/javascript">
+        document.getElementById("submit").onclick=function()
+        {
+          
+            document.getElementById("table").style.display="table";
+            
+            var table = document.getElementById("table");
+            var row = table.insertRow(-1);
+            var ID = row.insertCell(0);
+            var fname = row.insertCell(1);
+            var lname = row.insertCell(2);
+            var balance = row.insertCell(3);
+            var pin = row.insertCell(4);
+            debugger
+            // ID.innerHTML = document.getElementById("box");
+            fname.innerHTML = document.getElementById("fname").value;
+            lname.innerHTML = document.getElementById("lname").value; 
+            balance.innerHTML = document.getElementById("balance").value;
+            pin.innerHTML = document.getElementById("pin").value;
+        
+                  
+            return false;
+        }
+        
+      </script>
+      <script type="text/javascript">
+        document.getElementById("Transfer").onclick=function()
+        {
+            document.getElementById("table2").style.display="table2";
+            
+            var table = document.getElementById("table2");
+            var row = table.insertRow(-1);
+            var from = row.insertCell(0)
+            var to = row.insertCell(1);
+            var amount = row.insertCell(2);
+            var pin = row.insertCell(3);
+            from.innerHTML = document.getElementById("from").value;
+            to.innerHTML = document.getElementById("to").value;
+            amount.innerHTML = document.getElementById("amount").value;
+            pin1.innerHTML = document.getElementById("pin1").value;
+        
+                  
+            return false;
+        }
+        
+      </script>
+      <!--JS for date and time--->
+      <script type="text/javascript">
+        var date = new Date();
+        document.getElementById("p1").innerHTML = date;
+      </script>
+    </div>
+    </div>
+  </body>
+</html>
